@@ -42,7 +42,7 @@ def QueueTriggerPokeReport(azqueue: func.QueueMessage):
     blob_name = f"poke_report_{id}.csv"
     upload_csv_to_blob(blob_name=blob_name, csv_data=pokemon_bytes)
 
-    completed_url = f"https://{STORAGE_ACCOUNT_NAME}.blob.core.windows.net/{BLOB_CONTAINER_NAME}/{blob_name}.csv"
+    completed_url = f"https://{STORAGE_ACCOUNT_NAME}.blob.core.windows.net/{BLOB_CONTAINER_NAME}/{blob_name}"
 
     update_request( id, "completed", completed_url )
 
