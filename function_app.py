@@ -40,10 +40,10 @@ def QueueTriggerPokeReport(azqueue: func.QueueMessage):
 
     #Obtennemos la peticion que se esta procesando
     requests = get_request(id)
-    
-
+    #Obtenemos la cantidad de pokemones del tipo que dice la peticion (usando la pokeapi)
+    real_sample_size = get_pokemon_by_type(requests["type"])
     #Validamos el valor del sample_size
-    if sample_size > 0:
+    if sample_size > 0 and sample_size < real_sample_size:
         #Obtenemos los pokemones del tipo que dice la peticion (usando la pokeapi)
         pokemons = random.sample(get_pokemons(requests["type"]), sample_size)
     else: 
@@ -83,6 +83,13 @@ def get_pokemons( type: str) -> dict:
     pokemon_entries = data.get("pokemon", [])
 
     return [p["pokemon"] for p in pokemon_entries]
+
+def get_pokemon_by_type(type: str) -> int:
+    pokeapi_url = f"https://pokeapi.co/api/v2/type/{type}"
+    reponse = requests.get(pokeapi_url, timeout=3000)
+    data = reponse.json()
+    
+    return len(data.get("pokemon", []))
 
 def generate_csv_blob(pokemon_list: list) -> bytes:  
     # Convierte la lista de pokemones en un DataFrame de pandas (estructura tabular).
