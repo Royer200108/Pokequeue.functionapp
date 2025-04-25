@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 import pandas as pd
 from azure.storage.blob import BlobServiceClient
 import io
+import random
 
 app = func.FunctionApp()
 
@@ -27,18 +28,29 @@ STORAGE_ACCOUNT_NAME = os.getenv("STORAGE_ACCOUNT_NAME")
     connection="QueueAzureWebJobsStorage")
 
 def QueueTriggerPokeReport(azqueue: func.QueueMessage):
+    #Recuperamos el mensaje de la cola
     body = azqueue.get_body().decode('utf-8')
     record = json.loads(body)
 
+    #Definimos valores para el id y el sample_size
     id = record[0]["id_request"]
+    sample_size = record[0]["sample_size"]
+    #Actualiza el estado de la peticion
     update_request( id, "inprogress" )
 
+    #Obtennemos la peticion que se esta procesando
     requests = get_request(id)
-    pokemons = get_pokemons(requests["type"])
+    
 
-    #logger.info(pokemons)
+    #Validamos el valor del sample_size
+    if sample_size > 0:
+        #Obtenemos los pokemones del tipo que dice la peticion (usando la pokeapi)
+        pokemons = random.sample(get_pokemons(requests["type"]), sample_size)
+    else: 
+        pokemons = get_pokemons(requests["type"])
 
     pokemon_bytes = generate_csv_blob(pokemons)
+    
     blob_name = f"poke_report_{id}.csv"
     upload_csv_to_blob(blob_name=blob_name, csv_data=pokemon_bytes)
 
