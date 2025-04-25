@@ -115,9 +115,10 @@ ___Observación.___ Agregar la nueva variable de entorno creada en la definició
 ___Observación.___ Para poder realizar este proceso es necesario contar previamente con azure cli instalado.
 
 1. Iniciar sesión con la cuenta de azure en la consola ubicada en el directorio donde esta la function app y seleccionar la suscripción donde está levantado el recurso.
-`
+
+```bash
     az login
-`
+```
 
 2. Escribir el siguiente comando en consola:
 
